@@ -1,30 +1,27 @@
-//routes/Post.js
-const { Post, validate } = require('../models/post')
-const express = require('express')
-const router = express.Router()
-const postRouter = router.post('/post/cars', async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).send(error.details[0].message);
+const express = require('express');
+const mongoose = require('mongoose');
+const post = require('../models/post');
+const app = express();
+// Middleware
+app.use(bodyParser.json()); // For parsing application/json
+// POST route to create a new post
+app.post('/posts', async (req, res) => {
+    try {
+      const { title, content } = req.body;
+      
+      // Create a new Post
+      const newPost = new Post({
+        title,
+        content
+      });
+  
+      // Save the post to the database
+      const savedPost = await newPost.save();
+      
+      // Send response
+      res.status(201).json(savedPost);
+    } catch (error) {
+      console.error('Error creating post:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
     }
-    let post = await Post.findOne({ image: req.body.image })
-    if (post) {
-        return res.status(400).send('image already exisits. Please post other')
-    }else {
-        try {
-           
-         
-            const post = new Post({
-                name: req.body.name,
-               head: req.body.head,
-               details: req.body.details,
-               image: req.body.image
-            })
-            await post.save()
-            
-        } catch (err) {
-            return res.status(400).json({ message: err.message })
-        }
-    }
-})
-module.exports = postRouter
+  });
