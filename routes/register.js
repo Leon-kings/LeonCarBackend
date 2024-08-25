@@ -5,7 +5,8 @@ const bcrypt = require('bcrypt')
 const express = require('express')
 const router = express.Router()
 const sendEmail = require("../utils/Email");
-
+const jwt = require('jsonwebtoken');
+const secretKey = 'abc@123'; 
 const registerRouter = router.post('/register', async (req, res) => {
     const { error } = validate(req.body);
     if (error) {
@@ -27,7 +28,7 @@ const registerRouter = router.post('/register', async (req, res) => {
             // Tokens starts
             let token = await new Token({
                 userId: user._id,
-                token: crypto.randomBytes(32).toString("hex"),
+                token: jwt.sign(user, secretKey, { expiresIn: '1h' }),
               }).save();
           
               const message = `${process.env.BASE_URL}/user/verify/${user.id}/${token.token}`;

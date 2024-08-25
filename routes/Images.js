@@ -1,8 +1,8 @@
 const express = require('express');
-
+const bodyParser = require('body-parser');
 const multer = require('multer');
 
-const image = require('../models/image');
+const Image = require('../models/image');
 const app = express();
 // Middleware
 app.use(bodyParser.json()); // For parsing application/json
